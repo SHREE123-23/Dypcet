@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DYPCET STAYZONE | Student Housing Portal</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ════════════════════════════════════════
+   CSS VARIABLES — LIGHT & DARK THEMES
+════════════════════════════════════════ */
+:root {
+  --blue:#0a3d62;--blue2:#1a5276;--blue3:#2e86c1;
+  --gold:#f39c12;--gold2:#f8c471;
+  --bg:#eef2f7;--white:#ffffff;--muted:#64748b;
+  --red:#ef4444;--green:#10b981;
+  --card-bg:#ffffff;--card-shadow:0 4px 18px rgba(0,0,0,0.07);
+  --text:#1a202c;--text2:#334155;--border:#e2e8f0;
+  --input-bg:#ffffff;--nav-bg:var(--blue);
+  --filter-bg:#ffffff;--skeleton:#e2e8f0;--skeleton2:#f1f5f9;
+}
+[data-theme="dark"] {
+  --bg:#0f172a;--white:#1e293b;--muted:#94a3b8;
+  --card-bg:#1e293b;--card-shadow:0 4px 18px rgba(0,0,0,0.35);
+  --text:#f1f5f9;--text2:#cbd5e1;--border:#334155;
+  --input-bg:#1e293b;--filter-bg:#1e293b;
+  --skeleton:#334155;--skeleton2:#1e293b;
+  --blue:#1565a0;--blue2:#1976d2;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background 0.35s,color 0.35s;}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
+a{text-decoration:none;}
+
+/* ── SCROLL TO TOP ── */
+#scrollTop{position:fixed;bottom:28px;right:28px;z-index:8000;background:var(--gold);color:var(--blue);border:none;border-radius:50%;width:46px;height:46px;font-size:1.1rem;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(243,156,18,0.4);transition:all 0.3s;font-weight:800;}
+#scrollTop:hover{transform:translateY(-4px) scale(1.08);}
+#scrollTop.show{display:flex;}
+
+/* ── TOAST ── */
+#toast-container{position:fixed;bottom:80px;right:24px;z-index:9500;display:flex;flex-direction:column;gap:10px;}
+.toast-item{background:var(--card-bg);border:1.5px solid var(--border);border-radius:14px;padding:13px 18px;font-size:0.82rem;font-weight:700;color:var(--text);box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;align-items:center;gap:10px;min-width:240px;max-width:320px;animation:toastIn 0.35s ease;border-left:4px solid var(--gold);}
+.toast-item.success{border-left-color:var(--green);}
+.toast-item.error{border-left-color:var(--red);}
+.toast-item.info{border-left-color:var(--blue3);}
+@keyframes toastIn{from{opacity:0;transform:translateX(60px);}to{opacity:1;transform:translateX(0);}}
+@keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateX(60px);}}
+
+/* ── NAVBAR ── */
+.navbar{background:var(--blue);border-bottom:3px solid var(--gold);padding:10px 0;position:sticky;top:0;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:background 0.35s;}
+.brand{font-family:'Syne',sans-serif;font-size:1.25rem;color:white;text-decoration:none;font-weight:800;letter-spacing:-0.3px;}
+.brand span{color:var(--gold);}
+.nav-links{display:flex;gap:3px;align-items:center;flex-wrap:wrap;}
+.nav-link{color:rgba(255,255,255,0.72);font-weight:600;font-size:0.78rem;padding:6px 11px;border-radius:20px;cursor:pointer;transition:all 0.2s;border:none;background:none;display:flex;align-items:center;gap:5px;text-decoration:none;}
+.nav-link:hover{color:white;background:rgba(255,255,255,0.12);}
+.nav-link.active{color:var(--blue)!important;background:var(--gold);}
+.nav-badge{background:var(--red);color:white;font-size:0.6rem;font-weight:800;padding:1px 6px;border-radius:50px;margin-left:2px;}
+.dark-toggle{background:rgba(255,255,255,0.12);border:none;color:white;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:0.95rem;}
+.dark-toggle:hover{background:rgba(255,255,255,0.22);}
+
+/* ── PAGE SYSTEM ── */
+.page{display:none;min-height:80vh;}
+.page.active{display:block;animation:fadeUp 0.35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#072d47 0%,#0a3d62 40%,#1a6090 100%);color:white;padding:65px 0 110px;border-radius:0 0 60px 60px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:420px;height:420px;background:radial-gradient(circle,rgba(243,156,18,0.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-100px;left:-60px;width:350px;height:350px;background:radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.hero h1{font-size:2.6rem;font-weight:800;line-height:1.15;}
+.hero-stat{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:14px 22px;text-align:center;backdrop-filter:blur(8px);}
+.hero-stat .val{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--gold);}
+.hero-stat .lbl{font-size:0.72rem;opacity:0.7;margin-top:2px;}
+
+/* ── FILTER BOX ── */
+.filter-box{background:var(--filter-bg);border-radius:24px;padding:24px;margin-top:-58px;box-shadow:0 20px 60px rgba(10,61,98,0.14);position:relative;z-index:10;transition:background 0.35s;}
+.filter-box label{font-size:0.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);display:block;margin-bottom:5px;}
+.filter-box .form-control,.filter-box .form-select{border-radius:12px;border:1.5px solid var(--border);font-size:0.875rem;font-weight:600;padding:9px 13px;color:var(--text);background:var(--input-bg);transition:border-color 0.2s,background 0.3s;}
+.filter-box .form-control:focus,.filter-box .form-select:focus{border-color:#2e86c1;box-shadow:none;}
+.results-count{font-size:0.8rem;font-weight:700;color:var(--muted);}
+.results-count span{color:#2e86c1;font-size:1rem;}
+.view-toggle-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:7px 14px;font-size:0.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.view-toggle-btn.active{background:var(--blue);color:white;border-color:var(--blue);}
+
+/* ── SMART BADGES ── */
+.smart-badge{font-size:0.62rem;font-weight:800;padding:3px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:3px;margin:1px;}
+.sb-popular{background:#fef3c7;color:#92400e;}
+.sb-value{background:#d1fae5;color:#065f46;}
+.sb-nearest{background:#e0f2fe;color:#0369a1;}
+.sb-rated{background:#fce7f3;color:#9d174d;}
+
+/* ── CARDS ── */
+.listing-card{background:var(--card-bg);border-radius:22px;overflow:hidden;border:none;box-shadow:var(--card-shadow);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);height:100%;display:flex;flex-direction:column;}
+.listing-card:hover{transform:translateY(-8px);box-shadow:0 24px 50px rgba(10,61,98,0.14);}
+.card-img-wrap{position:relative;height:200px;overflow:hidden;cursor:pointer;}
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;}
+.card-img-wrap:hover img{transform:scale(1.06);}
+.thumb-strip{display:flex;gap:4px;padding:6px 8px;background:var(--card-bg);border-top:1px solid var(--border);}
+.thumb-strip img{width:44px;height:34px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;flex-shrink:0;}
+.thumb-strip img:hover,.thumb-strip img.active{border-color:var(--gold);}
+.img-count{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.55);color:white;font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:20px;backdrop-filter:blur(4px);}
+.price-pill{position:absolute;top:12px;left:12px;background:rgba(255,255,255,0.96);border:1px solid rgba(10,61,98,0.12);padding:5px 13px;border-radius:50px;font-weight:800;font-size:0.88rem;color:#0a3d62;backdrop-filter:blur(4px);z-index:2;}
+[data-theme="dark"] .price-pill{color:#0a3d62;}
+.avail-pill{position:absolute;top:12px;right:46px;padding:4px 10px;border-radius:50px;font-size:0.65rem;font-weight:800;z-index:2;}
+.avail-open{background:var(--green);color:white;}
+.avail-full{background:var(--red);color:white;}
+.bookmark-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.9);border:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:0.9rem;color:#94a3b8;z-index:2;backdrop-filter:blur(4px);}
+.bookmark-btn:hover{background:white;color:var(--gold);transform:scale(1.12);}
+.bookmark-btn.saved{color:var(--gold);background:white;}
+.card-body-inner{padding:14px;flex:1;display:flex;flex-direction:column;gap:7px;}
+.card-top-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
+.type-badge{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:6px;background:#f1f5f9;color:#475569;border:1px solid var(--border);}
+[data-theme="dark"] .type-badge{background:#334155;color:#94a3b8;}
+.gender-badge{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:6px;}
+.gb-boys{background:#dbeafe;color:#1e40af;}
+.gb-girls{background:#fce7f3;color:#9d174d;}
+.gb-coed{background:#d1fae5;color:#065f46;}
+.card-name{font-size:1rem;font-weight:800;color:var(--blue3);font-family:'Syne',sans-serif;line-height:1.2;cursor:pointer;}
+[data-theme="dark"] .card-name{color:#60a5fa;}
+.card-name:hover{text-decoration:underline;}
+.dist-row{font-size:0.78rem;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;}
+.amenity-icons{display:flex;flex-wrap:wrap;gap:6px;}
+.amen-item{display:flex;align-items:center;gap:4px;font-size:0.7rem;font-weight:600;color:var(--text2);}
+.amen-item i{color:#2e86c1;width:14px;}
+.bed-row{display:flex;flex-wrap:wrap;gap:4px;}
+.bed-pill{background:#f1f5f9;color:#475569;font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:6px;display:inline-flex;align-items:center;gap:3px;}
+[data-theme="dark"] .bed-pill{background:#334155;color:#94a3b8;}
+.note-box{background:var(--bg);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:8px 12px;font-size:0.78rem;color:var(--muted);font-style:italic;flex-grow:1;}
+.star-row{display:flex;align-items:center;gap:6px;}
+.tag-row{display:flex;flex-wrap:wrap;gap:3px;}
+.tag-chip{background:#f1f5f9;color:#475569;padding:3px 9px;border-radius:6px;font-size:0.65rem;font-weight:700;display:inline-block;}
+[data-theme="dark"] .tag-chip{background:#334155;color:#94a3b8;}
+.card-actions{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap;}
+.btn-wa{background:#25d366;color:white;border:none;border-radius:12px;font-weight:700;font-size:0.78rem;padding:8px 12px;flex:1;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.btn-wa:hover{background:#1da851;color:white;}
+.btn-map{background:var(--bg);color:var(--blue3);border:none;border-radius:12px;font-weight:700;font-size:0.78rem;padding:8px 12px;flex:1;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.btn-map:hover{background:#dde6ef;}
+.btn-rv{background:transparent;color:var(--gold);border:1.5px solid var(--gold);border-radius:12px;font-size:0.72rem;font-weight:700;padding:7px 10px;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;}
+.btn-rv:hover{background:var(--gold);color:white;}
+.btn-share{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:12px;font-size:0.72rem;font-weight:700;padding:7px 10px;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;cursor:pointer;}
+.btn-share:hover{background:var(--blue3);color:white;border-color:var(--blue3);}
+.btn-menu{background:transparent;color:#7c3aed;border:1.5px solid #c4b5fd;border-radius:12px;font-size:0.72rem;font-weight:700;padding:7px 10px;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;cursor:pointer;}
+.btn-menu:hover{background:#7c3aed;color:white;border-color:#7c3aed;}
+
+/* ── SKELETON ── */
+.skeleton-card{background:var(--card-bg);border-radius:22px;overflow:hidden;box-shadow:var(--card-shadow);}
+.skel{background:linear-gradient(90deg,var(--skeleton) 25%,var(--skeleton2) 50%,var(--skeleton) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.skel-img{height:200px;border-radius:0;}
+.skel-line{height:12px;margin:8px 16px;}
+.skel-line.w70{width:70%;}
+.skel-line.w50{width:50%;}
+.skel-line.w90{width:90%;}
+
+/* ── MAP VIEW ── */
+#map-view-area{display:none;}
+.map-iframe-wrap{border-radius:20px;overflow:hidden;box-shadow:var(--card-shadow);height:520px;}
+.map-iframe-wrap iframe{width:100%;height:100%;border:none;}
+.map-pins-list{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;padding-right:4px;}
+.map-pin-item{background:var(--card-bg);border-radius:14px;padding:13px 16px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px;}
+.map-pin-item:hover{border-color:var(--gold);box-shadow:0 4px 14px rgba(243,156,18,0.2);}
+.map-pin-num{background:var(--blue);color:white;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:800;flex-shrink:0;}
+.map-pin-name{font-weight:800;font-size:0.88rem;color:var(--text);}
+.map-pin-sub{font-size:0.72rem;color:var(--muted);}
+
+/* ── LIGHTBOX ── */
+#lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:9999;align-items:center;justify-content:center;}
+#lightbox.open{display:flex;}
+#lightbox img{max-width:90vw;max-height:82vh;border-radius:14px;object-fit:contain;box-shadow:0 30px 80px rgba(0,0,0,0.5);}
+#lb-close{position:fixed;top:18px;right:22px;color:white;font-size:2rem;cursor:pointer;opacity:0.8;z-index:10000;}
+#lb-prev,#lb-next{position:fixed;top:50%;transform:translateY(-50%);color:white;font-size:1.5rem;cursor:pointer;padding:12px 16px;background:rgba(255,255,255,0.12);border-radius:50%;transition:0.2s;z-index:10000;}
+#lb-prev:hover,#lb-next:hover{background:rgba(255,255,255,0.25);}
+#lb-prev{left:16px;}#lb-next{right:16px;}
+.lb-caption{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:white;font-size:0.85rem;font-weight:600;background:rgba(0,0,0,0.5);padding:6px 18px;border-radius:30px;backdrop-filter:blur(8px);}
+
+/* ── DETAIL MODAL ── */
+#detailModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:7000;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;}
+#detailModal.open{display:flex;}
+.dm-box{background:var(--card-bg);border-radius:28px;width:780px;max-width:100%;margin:auto;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.3);}
+.dm-header{background:linear-gradient(135deg,#072d47,#1a6090);color:white;padding:28px 30px 22px;position:relative;}
+.dm-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:white;border-radius:50%;width:34px;height:34px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.dm-gallery{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:16px;background:var(--bg);}
+.dm-gallery img{width:100%;height:120px;object-fit:cover;border-radius:10px;cursor:pointer;transition:transform 0.2s;}
+.dm-gallery img:first-child{grid-column:span 2;height:200px;}
+.dm-gallery img:hover{transform:scale(1.03);}
+.dm-body{padding:24px 28px;}
+.dm-section{margin-bottom:20px;}
+.dm-section-title{font-weight:800;font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.dm-amen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;}
+.dm-amen-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:0.75rem;font-weight:700;color:var(--text2);}
+.dm-amen-item i{display:block;font-size:1.2rem;color:#2e86c1;margin-bottom:4px;}
+.dm-map-embed{border-radius:14px;overflow:hidden;height:200px;}
+.dm-map-embed iframe{width:100%;height:100%;border:none;}
+
+/* ── REVIEWS MODAL ── */
+#reviewsModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;align-items:center;justify-content:center;}
+#reviewsModal.open{display:flex;}
+.rm-box{background:var(--card-bg);border-radius:26px;width:560px;max-width:96vw;max-height:88vh;overflow-y:auto;padding:0;}
+.rm-header{background:linear-gradient(135deg,#072d47,#0a3d62);color:white;padding:24px 28px;border-radius:26px 26px 0 0;position:sticky;top:0;z-index:1;}
+.rm-body{padding:24px 28px;}
+.star-selector{display:flex;gap:2px;margin-bottom:12px;}
+.sstar{font-size:1.8rem;cursor:pointer;color:#d1d5db;transition:color 0.1s;background:none;border:none;padding:2px;}
+.sstar.on{color:var(--gold);}
+.review-card{background:var(--bg);border-radius:14px;padding:14px 16px;margin-bottom:10px;border:1px solid var(--border);}
+.review-name{font-weight:800;font-size:0.85rem;color:var(--blue3);}
+.review-date{font-size:0.7rem;color:var(--muted);}
+.review-text{font-size:0.82rem;margin-top:6px;color:var(--text2);line-height:1.5;}
+.form-control,.form-select{border-radius:12px;border:1.5px solid var(--border);font-size:0.875rem;font-weight:600;padding:10px 14px;color:var(--text);background:var(--input-bg);transition:border-color 0.2s,background 0.3s;}
+.form-control:focus,.form-select:focus{border-color:#2e86c1;box-shadow:none;background:var(--input-bg);color:var(--text);}
+.form-label{font-weight:700;font-size:0.82rem;color:var(--text2);margin-bottom:6px;display:block;}
+
+/* ── MENU MODAL ── */
+#menuModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:6000;align-items:center;justify-content:center;}
+#menuModal.open{display:flex;}
+.menu-box{background:var(--card-bg);border-radius:26px;width:680px;max-width:96vw;max-height:90vh;overflow-y:auto;}
+.menu-header{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;padding:24px 28px;border-radius:26px 26px 0 0;position:sticky;top:0;z-index:1;}
+.menu-table{width:100%;border-collapse:collapse;}
+.menu-table th{background:var(--bg);color:var(--muted);font-size:0.7rem;font-weight:800;text-transform:uppercase;padding:10px 14px;border-bottom:2px solid var(--border);}
+.menu-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:0.82rem;color:var(--text2);font-weight:600;}
+.menu-table tr:nth-child(even) td{background:var(--bg);}
+.menu-table td:first-child{font-weight:800;color:var(--text);}
+
+/* ── AI QUIZ MODAL ── */
+#quizModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:8000;align-items:center;justify-content:center;}
+#quizModal.open{display:flex;}
+.quiz-box{background:var(--card-bg);border-radius:28px;width:560px;max-width:96vw;padding:0;overflow:hidden;}
+.quiz-header{background:linear-gradient(135deg,#0a3d62,#1a6090);color:white;padding:26px 30px;}
+.quiz-body{padding:28px 30px;}
+.quiz-step{display:none;}
+.quiz-step.active{display:block;}
+.quiz-opt{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;border:2px solid var(--border);cursor:pointer;margin-bottom:10px;transition:all 0.2s;background:var(--bg);}
+.quiz-opt:hover{border-color:#2e86c1;background:#eff6ff;}
+.quiz-opt.selected{border-color:var(--blue);background:#eff6ff;}
+[data-theme="dark"] .quiz-opt:hover,[data-theme="dark"] .quiz-opt.selected{background:#1e3a5f;}
+.quiz-opt-icon{font-size:1.4rem;}
+.quiz-opt-text{font-weight:700;font-size:0.88rem;color:var(--text);}
+.quiz-progress{height:5px;background:var(--border);border-radius:3px;margin-bottom:22px;}
+.quiz-progress-bar{height:100%;background:var(--gold);border-radius:3px;transition:width 0.4s;}
+.quiz-result-card{background:var(--bg);border-radius:16px;padding:16px;margin-bottom:10px;border:2px solid var(--border);cursor:pointer;transition:all 0.2s;}
+.quiz-result-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.quiz-result-card .rank{background:var(--gold);color:var(--blue);font-weight:800;font-size:0.75rem;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;}
+
+/* ── COMPARE PAGE ── */
+.compare-page-hero{background:linear-gradient(135deg,#072d47,#1a6090);color:white;padding:50px 0;border-radius:0 0 40px 40px;}
+.compare-select-area{background:var(--card-bg);border-radius:20px;padding:28px;box-shadow:var(--card-shadow);}
+.cmp-table{border-radius:16px;overflow:hidden;border:1.5px solid var(--border);}
+.cmp-col-header{background:#0a3d62;color:white;font-family:'Syne',sans-serif;font-size:0.88rem;text-align:center;padding:13px;}
+.cmp-row-label{font-weight:700;font-size:0.82rem;color:#2e86c1;background:var(--bg);white-space:nowrap;}
+.cmp-table td,.cmp-table th{padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.82rem;color:var(--text);}
+.cmp-win{background:#fef9ee!important;font-weight:800;color:#0a3d62;}
+[data-theme="dark"] .cmp-win{background:#1a2d0f!important;color:#86efac;}
+
+/* ── WISHLIST ── */
+.wishlist-hero{background:linear-gradient(135deg,#072d47,#1a6090);color:white;padding:50px 0;border-radius:0 0 40px 40px;}
+.empty-state{text-align:center;padding:90px 20px;color:var(--muted);}
+.empty-state i{font-size:4.5rem;opacity:0.2;display:block;margin-bottom:20px;}
+.empty-state h4{font-size:1.2rem;font-weight:700;opacity:0.5;}
+.empty-state p{font-size:0.85rem;opacity:0.4;margin-top:6px;}
+
+/* ── ADMIN ── */
+.admin-hero{background:linear-gradient(135deg,#1e1b4b,#312e81);color:white;padding:55px 0;border-radius:0 0 50px 50px;}
+.stat-card{background:var(--card-bg);border-radius:18px;padding:22px;box-shadow:var(--card-shadow);border-left:4px solid var(--gold);}
+.stat-card.blue{border-left-color:#2e86c1;}
+.stat-card.green{border-left-color:var(--green);}
+.stat-card.red{border-left-color:var(--red);}
+.stat-card .s-val{font-size:2rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--text);}
+.stat-card .s-lbl{font-size:0.78rem;color:var(--muted);font-weight:600;margin-top:4px;}
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:8px;height:120px;padding:0 4px;}
+.chart-bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px;}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(to top,#2e86c1,#5dade2);min-height:4px;transition:height 0.8s cubic-bezier(0.4,0,0.2,1);}
+.chart-bar-lbl{font-size:0.62rem;font-weight:700;color:var(--muted);text-align:center;}
+.chart-bar-val{font-size:0.62rem;font-weight:800;color:#2e86c1;}
+.admin-table td,.admin-table th{padding:10px 16px;font-size:0.82rem;color:var(--text);border-bottom:1px solid var(--border);}
+.admin-table th{font-weight:800;color:var(--muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:.4px;background:var(--bg);}
+.admin-lock{background:var(--card-bg);border-radius:20px;padding:40px;text-align:center;max-width:360px;margin:60px auto;box-shadow:var(--card-shadow);}
+
+/* ── OWNER PAGE ── */
+.owner-hero{background:linear-gradient(135deg,#072d47,#1a6090);color:white;padding:55px 0;border-radius:0 0 50px 50px;}
+.owner-form-card{background:var(--card-bg);border-radius:24px;box-shadow:var(--card-shadow);}
+.owner-form-card .section-bar{background:var(--bg);border-radius:12px;padding:10px 16px;font-weight:800;font-size:0.85rem;color:#2e86c1;display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.amen-check{display:none;}
+.amen-check-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;}
+.amen-check+label{cursor:pointer;display:flex;align-items:center;gap:8px;font-size:0.8rem;font-weight:700;padding:9px 13px;background:var(--bg);border-radius:11px;border:2px solid transparent;transition:all 0.2s;color:var(--text2);}
+.amen-check:checked+label{border-color:#2e86c1;background:#eff6ff;color:#0a3d62;}
+[data-theme="dark"] .amen-check:checked+label{background:#1e3a5f;color:#93c5fd;}
+.img-preview-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.img-preview-wrap img{width:88px;height:68px;object-fit:cover;border-radius:10px;border:2px solid var(--border);}
+.img-placeholder{width:88px;height:68px;border-radius:10px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1.5rem;cursor:pointer;}
+
+/* ── MISC ── */
+.section-title{font-family:'Syne',sans-serif;font-weight:800;color:var(--text);}
+.divider{height:3px;background:linear-gradient(90deg,var(--gold),transparent);border-radius:3px;margin:10px 0 24px;}
+.btn-gold{background:var(--gold);color:#0a3d62;border:none;border-radius:50px;font-weight:800;font-size:0.9rem;padding:12px 32px;transition:0.2s;font-family:'Syne',sans-serif;cursor:pointer;}
+.btn-gold:hover{background:var(--gold2);color:#0a3d62;}
+.btn-blue{background:#0a3d62;color:white;border:none;border-radius:50px;font-weight:800;font-size:0.9rem;padding:12px 32px;transition:0.2s;cursor:pointer;}
+.btn-blue:hover{background:#1a5276;color:white;}
+footer{background:#072d47;color:rgba(255,255,255,0.65);text-align:center;padding:28px;margin-top:60px;font-size:0.8rem;}
+footer a{color:var(--gold);}
+footer strong{color:white;}
+@media(max-width:576px){.hero h1{font-size:1.85rem;}.nav-links{gap:1px;}.nav-link{padding:5px 8px;font-size:0.7rem;}}
+@media print{.navbar,.filter-box,.btn-wa,.btn-map,.btn-rv,.btn-share,.btn-menu,footer,#scrollTop,#toast-container{display:none!important;}.listing-card{break-inside:avoid;}.page{display:block!important;}}
+</style>
+</head>
+<body>
+
+<!-- SCROLL TOP -->
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ════════ NAVBAR ════════ -->
+<nav class="navbar">
+  <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <a class="brand" href="#" onclick="showPage('home')">
+      <i class="fas fa-graduation-cap me-2" style="color:var(--gold)"></i>DYPCET <span>STAYZONE</span>
+    </a>
+    <div class="nav-links">
+      <button class="nav-link active" id="nav-home" onclick="showPage('home')"><i class="fas fa-home"></i><span class="d-none d-sm-inline">Home</span></button>
+      <button class="nav-link" id="nav-compare" onclick="showPage('compare')"><i class="fas fa-scale-balanced"></i><span class="d-none d-sm-inline">Compare</span></button>
+      <button class="nav-link" id="nav-wishlist" onclick="showPage('wishlist')"><i class="fas fa-bookmark"></i><span class="d-none d-sm-inline">Saved</span><span class="nav-badge" id="wishlist-count" style="display:none">0</span></button>
+      <button class="nav-link" id="nav-owner" onclick="showPage('owner')"><i class="fas fa-building"></i><span class="d-none d-sm-inline">Owner</span></button>
+      <button class="nav-link" id="nav-admin" onclick="showPage('admin')"><i class="fas fa-chart-pie"></i><span class="d-none d-sm-inline">Admin</span></button>
+      <button class="dark-toggle ms-1" onclick="toggleDark()" title="Toggle Dark Mode" id="darkBtn"><i class="fas fa-moon"></i></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════ PAGE: HOME ════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="container position-relative" style="z-index:2">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="mb-3"><span style="background:rgba(243,156,18,0.2);color:var(--gold);font-size:0.75rem;font-weight:800;padding:5px 14px;border-radius:20px;letter-spacing:.5px;">📍 BAWDA, KOLHAPUR</span></div>
+          <h1>Find Your Perfect<br>Student Home 🏡</h1>
+          <p class="mt-3 mb-4" style="opacity:.75;font-size:1rem;line-height:1.6;">Verified hostels & messes near DYPCET. Filter, compare, and contact owners directly.</p>
+          <div class="d-flex gap-3 flex-wrap mb-4">
+            <div class="hero-stat"><div class="val" id="stat-total">0</div><div class="lbl">Listings</div></div>
+            <div class="hero-stat"><div class="val" id="stat-hostels">0</div><div class="lbl">Hostels</div></div>
+            <div class="hero-stat"><div class="val" id="stat-messes">0</div><div class="lbl">Messes</div></div>
+            <div class="hero-stat"><div class="val" id="stat-closest">0</div><div class="lbl">Closest (m)</div></div>
+          </div>
+          <button class="btn-gold px-4 py-2" style="font-size:0.88rem;" onclick="openQuiz()"><i class="fas fa-magic me-2"></i>AI: Find Best Match For Me</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="filter-box">
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3">
+          <label>🔍 Search</label>
+          <input type="text" id="f-search" class="form-control" placeholder="Property name..." oninput="doFilter()">
+        </div>
+        <div class="col-6 col-md-2">
+          <label>📋 Type</label>
+          <select id="f-type" class="form-select" onchange="doFilter()">
+            <option value="all">All Types</option>
+            <option value="Hostel">Hostel</option>
+            <option value="Mess">Mess</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label>📍 Distance</label>
+          <select id="f-dist" class="form-select" onchange="doFilter()">
+            <option value="all">Any</option>
+            <option value="300">≤ 300m</option>
+            <option value="600">≤ 600m</option>
+            <option value="1600">≤ 1.6km</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label>💰 Budget</label>
+          <select id="f-budget" class="form-select" onchange="doFilter()">
+            <option value="all">Any</option>
+            <option value="2000">≤ ₹2,000</option>
+            <option value="2500">≤ ₹2,500</option>
+            <option value="3500">≤ ₹3,500</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label>↕ Sort By</label>
+          <select id="f-sort" class="form-select" onchange="doFilter()">
+            <option value="default">Default</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="dist-asc">Distance: Nearest</option>
+            <option value="rating-desc">Rating: Best First</option>
+          </select>
+        </div>
+      </div>
+      <div class="row g-3 align-items-center">
+        <div class="col-6 col-md-2">
+          <label>👤 Gender</label>
+          <select id="f-gender" class="form-select" onchange="doFilter()">
+            <option value="all">All</option>
+            <option value="Boys">Boys</option>
+            <option value="Girls">Girls</option>
+            <option value="Co-ed">Co-ed</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label>🛏 Beds</label>
+          <select id="f-beds" class="form-select" onchange="doFilter()">
+            <option value="all">Any</option>
+            <option value="2">2-Sharing</option>
+            <option value="3">3-Sharing</option>
+            <option value="4">4-Sharing</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label>✅ Available</label>
+          <select id="f-avail" class="form-select" onchange="doFilter()">
+            <option value="all">All</option>
+            <option value="open">Available</option>
+            <option value="full">Full</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-6 d-flex align-items-end justify-content-end gap-2 flex-wrap">
+          <span class="results-count"><span id="result-num">9</span> results</span>
+          <button class="view-toggle-btn active" id="btn-grid" onclick="setView('grid')"><i class="fas fa-grip"></i> Grid</button>
+          <button class="view-toggle-btn" id="btn-map-toggle" onclick="setView('map')"><i class="fas fa-map"></i> Map</button>
+          <button class="view-toggle-btn" style="background:var(--bg);color:var(--muted);" onclick="clearFilters()"><i class="fas fa-rotate-left"></i> Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID VIEW -->
+  <div class="container mt-4 mb-5" id="grid-view-area">
+    <div class="row g-4" id="cards-area"></div>
+    <div id="no-results" class="empty-state" style="display:none;">
+      <i class="fas fa-search"></i>
+      <h4>No properties found</h4>
+      <p>Try adjusting your filters</p>
+    </div>
+  </div>
+
+  <!-- MAP VIEW -->
+  <div class="container mt-4 mb-5" id="map-view-area">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="map-iframe-wrap">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.5!2d74.0!3d16.67!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc0!2sDYPCET+Kolhapur!5e0!3m2!1sen!2sin!4v1" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div style="font-weight:800;font-size:0.9rem;color:var(--text);margin-bottom:12px;font-family:'Syne',sans-serif;"><i class="fas fa-map-pin me-2" style="color:var(--gold)"></i>All Properties</div>
+        <div class="map-pins-list" id="map-pins-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: COMPARE ════════ -->
+<div class="page" id="page-compare">
+  <div class="compare-page-hero">
+    <div class="container text-center">
+      <h2 style="font-size:2.2rem;">Compare Properties</h2>
+      <p style="opacity:.7;font-size:0.95rem;margin-top:8px;">Select up to 3 listings and compare side by side</p>
+    </div>
+  </div>
+  <div class="container mt-5 mb-5">
+    <div class="compare-select-area mb-4">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4"><label class="form-label">Property 1</label>
+          <select id="cmp-1" class="form-select" onchange="buildCompare()"><option value="">— Select —</option></select></div>
+        <div class="col-md-4"><label class="form-label">Property 2</label>
+          <select id="cmp-2" class="form-select" onchange="buildCompare()"><option value="">— Select —</option></select></div>
+        <div class="col-md-4"><label class="form-label">Property 3 (optional)</label>
+          <select id="cmp-3" class="form-select" onchange="buildCompare()"><option value="">— Select —</option></select></div>
+      </div>
+    </div>
+    <div id="compare-result"></div>
+    <div id="compare-empty" class="empty-state">
+      <i class="fas fa-scale-balanced"></i>
+      <h4>Pick at least 2 properties above</h4>
+      <p>They'll appear here side-by-side</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: WISHLIST ════════ -->
+<div class="page" id="page-wishlist">
+  <div class="wishlist-hero">
+    <div class="container text-center">
+      <h2 style="font-size:2.2rem;"><i class="fas fa-bookmark me-2" style="color:var(--gold)"></i>Saved Properties</h2>
+      <p style="opacity:.7;font-size:0.95rem;margin-top:8px;">Your bookmarked listings — all in one place</p>
+    </div>
+  </div>
+  <div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-end mb-4" id="wishlist-actions" style="display:none!important;">
+      <button class="btn-gold" style="font-size:0.82rem;padding:9px 22px;" onclick="printWishlist()"><i class="fas fa-file-pdf me-2"></i>Export as PDF</button>
+    </div>
+    <div class="row g-4" id="wishlist-area"></div>
+    <div id="wishlist-empty" class="empty-state">
+      <i class="fas fa-bookmark"></i>
+      <h4>No saved properties yet</h4>
+      <p>Click the 🔖 bookmark on any listing to save it here</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: OWNER ════════ -->
+<div class="page" id="page-owner">
+  <div class="owner-hero">
+    <div class="container text-center">
+      <div class="mb-3"><span style="background:rgba(243,156,18,0.2);color:var(--gold);font-size:0.75rem;font-weight:800;padding:5px 14px;border-radius:20px;">FREE LISTING</span></div>
+      <h2 style="font-size:2.2rem;">List Your Property</h2>
+      <p style="opacity:.7;margin-top:8px;">Register your hostel or mess to reach 1,000+ DYPCET students</p>
+    </div>
+  </div>
+  <div class="container mt-5 mb-5">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="owner-form-card p-4 mb-4">
+          <h5 class="section-title mb-3"><i class="fas fa-circle-info me-2" style="color:var(--gold)"></i>Why List Here?</h5>
+          <div class="divider"></div>
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex gap-3 align-items-start"><div style="background:#eff6ff;border-radius:10px;padding:10px;"><i class="fas fa-users" style="color:#0a3d62;font-size:1.1rem;"></i></div><div><div style="font-weight:800;font-size:0.88rem;">Reach 1,000+ Students</div><div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">Directly connect with DYPCET students</div></div></div>
+            <div class="d-flex gap-3 align-items-start"><div style="background:#f0fdf4;border-radius:10px;padding:10px;"><i class="fas fa-star" style="color:var(--green);font-size:1.1rem;"></i></div><div><div style="font-weight:800;font-size:0.88rem;">Ratings & Reviews</div><div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">Build trust with genuine student feedback</div></div></div>
+            <div class="d-flex gap-3 align-items-start"><div style="background:#fef9ee;border-radius:10px;padding:10px;"><i class="fab fa-whatsapp" style="color:#25d366;font-size:1.1rem;"></i></div><div><div style="font-weight:800;font-size:0.88rem;">Direct WhatsApp Inquiries</div><div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">Students reach you instantly</div></div></div>
+            <div class="d-flex gap-3 align-items-start"><div style="background:#f5f3ff;border-radius:10px;padding:10px;"><i class="fas fa-tag" style="color:#7c3aed;font-size:1.1rem;"></i></div><div><div style="font-weight:800;font-size:0.88rem;">Completely Free</div><div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">No charges. No hidden fees. Ever.</div></div></div>
+          </div>
+        </div>
+        <div class="owner-form-card p-4" style="background:#0a3d62;color:white;">
+          <div style="font-size:2rem;margin-bottom:10px;">📞</div>
+          <div style="font-weight:800;font-family:'Syne',sans-serif;font-size:1rem;">Need Help?</div>
+          <div style="font-size:0.8rem;opacity:.7;margin:6px 0 14px;">Contact our support team for listing assistance</div>
+          <a href="https://wa.me/919999999999" class="btn-wa" style="border-radius:12px;padding:10px 20px;display:inline-flex;gap:8px;align-items:center;font-size:0.85rem;"><i class="fab fa-whatsapp"></i> WhatsApp Support</a>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="owner-form-card p-4 p-md-5">
+          <h4 class="section-title mb-1">Property Registration</h4>
+          <div class="divider"></div>
+          <form id="ownerForm" onsubmit="submitOwner(event)">
+            <div class="section-bar"><i class="fas fa-info-circle"></i> Basic Information</div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6"><label class="form-label">Property Type *</label>
+                <select class="form-select" required><option value="">Select type...</option><option>Hostel</option><option>Mess</option></select></div>
+              <div class="col-md-6"><label class="form-label">Property Name *</label>
+                <input type="text" class="form-control" placeholder="e.g. Shree Niwas Boys Hostel" required></div>
+              <div class="col-md-4"><label class="form-label">Monthly Price (₹) *</label>
+                <input type="number" class="form-control" placeholder="2500" required></div>
+              <div class="col-md-4"><label class="form-label">Distance from College (m) *</label>
+                <input type="number" class="form-control" placeholder="350" required></div>
+              <div class="col-md-4"><label class="form-label">Gender</label>
+                <select class="form-select"><option>Boys</option><option>Girls</option><option>Co-ed</option></select></div>
+              <div class="col-md-6"><label class="form-label">WhatsApp Number *</label>
+                <div class="input-group">
+                  <span class="input-group-text" style="border-radius:12px 0 0 12px;border:1.5px solid var(--border);border-right:none;background:var(--bg);font-size:0.85rem;font-weight:700;color:var(--text);">+91</span>
+                  <input type="tel" class="form-control" style="border-radius:0 12px 12px 0;" placeholder="9876543210" required>
+                </div></div>
+              <div class="col-md-6"><label class="form-label">Availability</label>
+                <select class="form-select"><option value="open">Open / Available</option><option value="full">No Vacancy / Full</option></select></div>
+            </div>
+            <div class="section-bar"><i class="fas fa-bed"></i> Sharing Options</div>
+            <div class="row g-2 mb-4">
+              <div class="col-12"><label class="form-label">Room Sharing Types Available</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <div><input type="checkbox" id="bed1" class="amen-check"><label for="bed1"><i class="fas fa-user me-1"></i>Single</label></div>
+                  <div><input type="checkbox" id="bed2" class="amen-check"><label for="bed2"><i class="fas fa-user-group me-1"></i>2-Sharing</label></div>
+                  <div><input type="checkbox" id="bed3" class="amen-check"><label for="bed3"><i class="fas fa-users me-1"></i>3-Sharing</label></div>
+                  <div><input type="checkbox" id="bed4" class="amen-check"><label for="bed4"><i class="fas fa-users me-1"></i>4-Sharing</label></div>
+                </div>
+              </div>
+            </div>
+            <div class="section-bar"><i class="fas fa-star"></i> Amenities</div>
+            <div class="amen-check-wrap mb-4">
+              <div><input type="checkbox" id="a-wifi" class="amen-check"><label for="a-wifi"><i class="fas fa-wifi"></i> Free WiFi</label></div>
+              <div><input type="checkbox" id="a-mess" class="amen-check"><label for="a-mess"><i class="fas fa-utensils"></i> Mess/Food</label></div>
+              <div><input type="checkbox" id="a-park" class="amen-check"><label for="a-park"><i class="fas fa-square-parking"></i> Parking</label></div>
+              <div><input type="checkbox" id="a-laun" class="amen-check"><label for="a-laun"><i class="fas fa-shirt"></i> Laundry</label></div>
+              <div><input type="checkbox" id="a-ac" class="amen-check"><label for="a-ac"><i class="fas fa-snowflake"></i> AC Rooms</label></div>
+              <div><input type="checkbox" id="a-water" class="amen-check"><label for="a-water"><i class="fas fa-droplet"></i> 24/7 Water</label></div>
+              <div><input type="checkbox" id="a-sec" class="amen-check"><label for="a-sec"><i class="fas fa-shield-halved"></i> Security</label></div>
+              <div><input type="checkbox" id="a-gym" class="amen-check"><label for="a-gym"><i class="fas fa-dumbbell"></i> Gym</label></div>
+              <div><input type="checkbox" id="a-cctv" class="amen-check"><label for="a-cctv"><i class="fas fa-camera"></i> CCTV</label></div>
+              <div><input type="checkbox" id="a-hot" class="amen-check"><label for="a-hot"><i class="fas fa-fire-burner"></i> Hot Water</label></div>
+            </div>
+            <div class="section-bar"><i class="fas fa-map-location-dot"></i> Location</div>
+            <div class="row g-3 mb-4">
+              <div class="col-12"><label class="form-label">Google Maps Link *</label>
+                <input type="url" class="form-control" placeholder="https://maps.app.goo.gl/..." required>
+                <div class="mt-1" style="font-size:0.73rem;color:var(--muted);">Paste your Google Maps location share link. <a href="https://maps.google.com" target="_blank" style="color:#2e86c1;">Open Google Maps →</a></div></div>
+              <div class="col-12"><label class="form-label">Address / Landmark</label>
+                <input type="text" class="form-control" placeholder="e.g. Near DYPCET Gate, Kasba Bawda, Kolhapur"></div>
+            </div>
+            <div class="section-bar"><i class="fas fa-images"></i> Property Photos</div>
+            <div class="mb-4">
+              <label class="form-label">Upload Photos (Max 5)</label>
+              <input type="file" class="form-control" id="imgUpload" accept="image/*" multiple onchange="previewImages(event)">
+              <div class="img-preview-wrap" id="img-previews">
+                <div class="img-placeholder" onclick="document.getElementById('imgUpload').click()"><i class="fas fa-plus"></i></div>
+              </div>
+            </div>
+            <div class="section-bar"><i class="fas fa-pen"></i> Additional Info</div>
+            <div class="mb-4">
+              <label class="form-label">Description / Note</label>
+              <textarea class="form-control" rows="3" placeholder="Describe your property, unique features, special rules, etc."></textarea>
+            </div>
+            <div class="text-center pt-2">
+              <button type="submit" class="btn-gold px-5 py-3" style="font-size:1rem;"><i class="fas fa-paper-plane me-2"></i>Submit Listing</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: ADMIN ════════ -->
+<div class="page" id="page-admin">
+  <div class="admin-hero">
+    <div class="container text-center">
+      <div class="mb-3"><span style="background:rgba(255,255,255,0.15);color:white;font-size:0.75rem;font-weight:800;padding:5px 14px;border-radius:20px;">🔒 ADMIN PANEL</span></div>
+      <h2 style="font-size:2.2rem;">Dashboard</h2>
+      <p style="opacity:.7;margin-top:8px;">Platform analytics and listing overview</p>
+    </div>
+  </div>
+  <div class="container mt-5 mb-5" id="admin-locked">
+    <div class="admin-lock">
+      <div style="font-size:3rem;margin-bottom:16px;">🔐</div>
+      <h5 class="section-title mb-2">Admin Access</h5>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px;">Enter the admin password to continue</p>
+      <input type="password" class="form-control mb-3" id="adminPwd" placeholder="Enter password..." onkeydown="if(event.key==='Enter')checkAdmin()">
+      <button class="btn-blue w-100" onclick="checkAdmin()"><i class="fas fa-unlock me-2"></i>Access Dashboard</button>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:12px;">Hint: <code>admin123</code></div>
+    </div>
+  </div>
+  <div class="container mt-5 mb-5" id="admin-content" style="display:none;">
+    <!-- Stats Row -->
+    <div class="row g-4 mb-5">
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="s-val" id="adm-total">9</div><div class="s-lbl"><i class="fas fa-building me-1"></i>Total Listings</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card blue"><div class="s-val" id="adm-reviews">0</div><div class="s-lbl"><i class="fas fa-star me-1"></i>Total Reviews</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card green"><div class="s-val" id="adm-avail">0</div><div class="s-lbl"><i class="fas fa-check-circle me-1"></i>Available Now</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card red"><div class="s-val" id="adm-avg-price">₹0</div><div class="s-lbl"><i class="fas fa-tag me-1"></i>Avg. Price/mo</div></div></div>
+    </div>
+    <!-- Chart -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-6">
+        <div class="stat-card" style="border-left-color:#7c3aed;">
+          <div style="font-weight:800;font-family:'Syne',sans-serif;margin-bottom:16px;font-size:0.95rem;color:var(--text);">📊 Price Overview</div>
+          <div class="chart-bar-wrap" id="price-chart"></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="stat-card" style="border-left-color:var(--green);">
+          <div style="font-weight:800;font-family:'Syne',sans-serif;margin-bottom:16px;font-size:0.95rem;color:var(--text);">⭐ Rating Overview</div>
+          <div class="chart-bar-wrap" id="rating-chart"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Table -->
+    <div class="stat-card" style="border-left-color:var(--gold);padding:0;overflow:hidden;">
+      <div style="padding:18px 20px;font-weight:800;font-family:'Syne',sans-serif;font-size:0.95rem;color:var(--text);border-bottom:1px solid var(--border);"><i class="fas fa-list me-2" style="color:var(--gold)"></i>All Listings</div>
+      <div class="table-responsive">
+        <table class="table admin-table mb-0" id="admin-table"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ LIGHTBOX ════════ -->
+<div id="lightbox">
+  <span id="lb-close" onclick="closeLightbox()"><i class="fas fa-xmark"></i></span>
+  <span id="lb-prev" onclick="lbNav(-1)"><i class="fas fa-chevron-left"></i></span>
+  <img id="lb-img" src="" alt="">
+  <span id="lb-next" onclick="lbNav(1)"><i class="fas fa-chevron-right"></i></span>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<!-- ════════ DETAIL MODAL ════════ -->
+<div id="detailModal">
+  <div class="dm-box">
+    <div class="dm-header">
+      <button class="dm-close" onclick="closeDetail()"><i class="fas fa-xmark"></i></button>
+      <div id="dm-badge-row" class="mb-2"></div>
+      <h4 id="dm-name" class="mb-1"></h4>
+      <div id="dm-sub" style="opacity:.75;font-size:0.85rem;"></div>
+    </div>
+    <div id="dm-gallery" class="dm-gallery"></div>
+    <div class="dm-body">
+      <div class="row g-3 mb-4">
+        <div class="col-4 text-center"><div style="font-size:1.5rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--gold);" id="dm-price"></div><div style="font-size:0.72rem;color:var(--muted);">per month</div></div>
+        <div class="col-4 text-center"><div style="font-size:1.5rem;font-weight:800;font-family:'Syne',sans-serif;color:#2e86c1;" id="dm-dist"></div><div style="font-size:0.72rem;color:var(--muted);">from DYPCET</div></div>
+        <div class="col-4 text-center"><div style="font-size:1.5rem;font-weight:800;font-family:'Syne',sans-serif;" id="dm-avail-badge"></div><div style="font-size:0.72rem;color:var(--muted);">availability</div></div>
+      </div>
+      <div class="dm-section">
+        <div class="dm-section-title">Amenities</div>
+        <div class="dm-amen-grid" id="dm-amenities"></div>
+      </div>
+      <div class="dm-section" id="dm-beds-wrap">
+        <div class="dm-section-title">Room Options</div>
+        <div class="bed-row" id="dm-beds"></div>
+      </div>
+      <div class="dm-section">
+        <div class="dm-section-title">Note</div>
+        <div class="note-box" id="dm-note"></div>
+      </div>
+      <div class="dm-section">
+        <div class="dm-section-title">Location</div>
+        <div class="dm-map-embed"><iframe id="dm-map-iframe" src="" allowfullscreen loading="lazy"></iframe></div>
+        <a id="dm-map-link" href="#" target="_blank" class="btn-map mt-2" style="display:inline-flex;border-radius:12px;padding:9px 18px;font-size:0.82rem;"><i class="fas fa-location-arrow me-2"></i>Open in Google Maps</a>
+      </div>
+      <div class="dm-section">
+        <div class="dm-section-title">Reviews (<span id="dm-review-count">0</span>)</div>
+        <div id="dm-reviews-list"></div>
+      </div>
+      <div class="d-flex gap-3 flex-wrap mt-4">
+        <a id="dm-wa" href="#" target="_blank" class="btn-wa" style="flex:1;border-radius:14px;padding:12px;"><i class="fab fa-whatsapp me-2"></i>WhatsApp Owner</a>
+        <button class="btn-rv" style="flex:1;border-radius:14px;padding:12px;" onclick="openReviewsFromDetail()"><i class="fas fa-star me-1"></i>Write Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ REVIEWS MODAL ════════ -->
+<div id="reviewsModal">
+  <div class="rm-box">
+    <div class="rm-header d-flex justify-content-between align-items-start">
+      <div>
+        <h5 class="mb-1 fw-bold" id="rm-name"></h5>
+        <div id="rm-avg" style="font-size:0.85rem;opacity:.8;"></div>
+      </div>
+      <button onclick="closeReviews()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:50%;width:32px;height:32px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="rm-body">
+      <div id="reviews-list" class="mb-4"></div>
+      <div style="border-top:1.5px solid var(--border);padding-top:20px;">
+        <div style="font-weight:800;font-size:0.95rem;margin-bottom:14px;color:var(--blue3);font-family:'Syne',sans-serif;">Leave a Review</div>
+        <div class="mb-3"><label class="form-label">Your Name</label>
+          <input type="text" class="form-control" id="rv-name" placeholder="e.g. Rohit S."></div>
+        <div class="mb-3"><label class="form-label">Rating</label>
+          <div class="star-selector" id="star-selector">
+            <button type="button" class="sstar" data-v="1" onclick="setRating(1)">★</button>
+            <button type="button" class="sstar" data-v="2" onclick="setRating(2)">★</button>
+            <button type="button" class="sstar" data-v="3" onclick="setRating(3)">★</button>
+            <button type="button" class="sstar" data-v="4" onclick="setRating(4)">★</button>
+            <button type="button" class="sstar" data-v="5" onclick="setRating(5)">★</button>
+          </div></div>
+        <div class="mb-3"><label class="form-label">Review</label>
+          <textarea class="form-control" id="rv-text" rows="3" placeholder="Share your experience..."></textarea></div>
+        <button class="btn-gold w-100" style="border-radius:12px;padding:11px;" onclick="submitReview()"><i class="fas fa-paper-plane me-2"></i>Post Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ MENU MODAL ════════ -->
+<div id="menuModal">
+  <div class="menu-box">
+    <div class="menu-header d-flex justify-content-between align-items-center">
+      <div>
+        <div style="font-size:0.72rem;font-weight:800;opacity:.7;letter-spacing:.5px;text-transform:uppercase;">Weekly Menu</div>
+        <h5 class="mb-0 mt-1" id="menu-name"></h5>
+      </div>
+      <button onclick="closeMenu()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div style="padding:20px 24px;">
+      <table class="menu-table" id="menu-table-body"></table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ AI QUIZ MODAL ════════ -->
+<div id="quizModal">
+  <div class="quiz-box">
+    <div class="quiz-header">
+      <div style="font-size:0.72rem;font-weight:800;opacity:.7;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">🤖 AI Recommendation</div>
+      <h5 class="mb-0" id="quiz-title">Find Your Perfect Match</h5>
+      <p style="opacity:.7;font-size:0.82rem;margin-top:6px;margin-bottom:0;" id="quiz-subtitle">Answer 4 quick questions</p>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress-bar" style="width:0%"></div></div>
+
+      <!-- Step 1: Budget -->
+      <div class="quiz-step active" id="qs-1">
+        <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:16px;">💰 What's your monthly budget?</div>
+        <div class="quiz-opt" onclick="quizSelect(1,'budget','2000')"><span class="quiz-opt-icon">🟢</span><span class="quiz-opt-text">Under ₹2,000 — Very budget-friendly</span></div>
+        <div class="quiz-opt" onclick="quizSelect(1,'budget','2500')"><span class="quiz-opt-icon">🟡</span><span class="quiz-opt-text">₹2,000 – ₹2,500 — Moderate</span></div>
+        <div class="quiz-opt" onclick="quizSelect(1,'budget','3500')"><span class="quiz-opt-icon">🔵</span><span class="quiz-opt-text">₹2,500 – ₹3,500 — Comfortable</span></div>
+        <div class="quiz-opt" onclick="quizSelect(1,'budget','9999')"><span class="quiz-opt-icon">🟣</span><span class="quiz-opt-text">No budget limit — Best quality!</span></div>
+      </div>
+
+      <!-- Step 2: Distance -->
+      <div class="quiz-step" id="qs-2">
+        <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:16px;">📍 How close should it be to DYPCET?</div>
+        <div class="quiz-opt" onclick="quizSelect(2,'dist','300')"><span class="quiz-opt-icon">🚶</span><span class="quiz-opt-text">Super close — Under 300m (walking)</span></div>
+        <div class="quiz-opt" onclick="quizSelect(2,'dist','600')"><span class="quiz-opt-icon">🛵</span><span class="quiz-opt-text">Nearby — Under 600m</span></div>
+        <div class="quiz-opt" onclick="quizSelect(2,'dist','9999')"><span class="quiz-opt-icon">🚌</span><span class="quiz-opt-text">Distance doesn't matter</span></div>
+      </div>
+
+      <!-- Step 3: Type -->
+      <div class="quiz-step" id="qs-3">
+        <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:16px;">🏠 What are you looking for?</div>
+        <div class="quiz-opt" onclick="quizSelect(3,'type','Hostel')"><span class="quiz-opt-icon">🛏</span><span class="quiz-opt-text">Hostel — Room + stay accommodation</span></div>
+        <div class="quiz-opt" onclick="quizSelect(3,'type','Mess')"><span class="quiz-opt-icon">🍛</span><span class="quiz-opt-text">Mess — Daily food / tiffin service</span></div>
+        <div class="quiz-opt" onclick="quizSelect(3,'type','all')"><span class="quiz-opt-icon">🔄</span><span class="quiz-opt-text">Both — Show me everything</span></div>
+      </div>
+
+      <!-- Step 4: Priority -->
+      <div class="quiz-step" id="qs-4">
+        <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:16px;">⭐ What's most important to you?</div>
+        <div class="quiz-opt" onclick="quizSelect(4,'priority','wifi')"><span class="quiz-opt-icon">📶</span><span class="quiz-opt-text">Free WiFi — Online classes & gaming</span></div>
+        <div class="quiz-opt" onclick="quizSelect(4,'priority','mess')"><span class="quiz-opt-icon">🍽</span><span class="quiz-opt-text">Mess / Food included</span></div>
+        <div class="quiz-opt" onclick="quizSelect(4,'priority','security')"><span class="quiz-opt-icon">🛡</span><span class="quiz-opt-text">Security & CCTV</span></div>
+        <div class="quiz-opt" onclick="quizSelect(4,'priority','rating')"><span class="quiz-opt-icon">🏆</span><span class="quiz-opt-text">Highest rated by students</span></div>
+      </div>
+
+      <!-- Results -->
+      <div class="quiz-step" id="qs-results">
+        <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:6px;">🎯 Your Top Matches</div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;">Based on your preferences, here are the best options:</p>
+        <div id="quiz-results-list"></div>
+        <button class="btn-blue w-100 mt-3" style="border-radius:14px;padding:11px;" onclick="closeQuiz()"><i class="fas fa-th me-2"></i>View All Results</button>
+        <button class="btn-gold w-100 mt-2" style="border-radius:14px;padding:11px;" onclick="restartQuiz()"><i class="fas fa-rotate-left me-2"></i>Try Again</button>
+      </div>
+
+      <!-- Nav buttons -->
+      <div class="d-flex justify-content-between mt-4" id="quiz-nav">
+        <button class="btn-blue" style="border-radius:12px;padding:9px 20px;font-size:0.82rem;" onclick="quizBack()" id="quiz-back-btn">← Back</button>
+        <button class="view-toggle-btn" onclick="closeQuiz()">Skip</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <strong>DYPCET STAYZONE</strong> &nbsp;·&nbsp; Bawda Student Housing Portal &nbsp;·&nbsp; Kolhapur<br>
+  <span style="font-size:.72rem;margin-top:6px;display:block;opacity:.5;">Made for DYPCET students. All listings are independently verified. &nbsp;·&nbsp; <a href="#">Report an issue</a></span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+const amenityDefs = {
+  wifi:    {icon:'fa-wifi',       label:'WiFi'},
+  mess:    {icon:'fa-utensils',   label:'Mess'},
+  parking: {icon:'fa-square-parking',label:'Parking'},
+  laundry: {icon:'fa-shirt',      label:'Laundry'},
+  ac:      {icon:'fa-snowflake',  label:'AC'},
+  water:   {icon:'fa-droplet',    label:'Water'},
+  security:{icon:'fa-shield-halved',label:'Security'},
+  cctv:    {icon:'fa-camera',     label:'CCTV'},
+  hot:     {icon:'fa-fire-burner',label:'Hot Water'}
+};
+
+const messMenus = {
+  5: [
+    {day:'Monday',   b:'Idli + Sambar', l:'Rice + Dal + Sabzi', d:'Chapati + Paneer'},
+    {day:'Tuesday',  b:'Poha + Chai',   l:'Rice + Rajma',       d:'Chapati + Dal Fry'},
+    {day:'Wednesday',b:'Upma + Juice',  l:'Jeera Rice + Kadhi',d:'Roti + Mix Veg'},
+    {day:'Thursday', b:'Bread + Eggs',  l:'Rice + Chole',       d:'Chapati + Aloo Sabzi'},
+    {day:'Friday',   b:'Idli + Chutney',l:'Pulao + Raita',      d:'Roti + Dal + Salad'},
+    {day:'Saturday', b:'Paratha + Curd',l:'Rice + Fish Curry',  d:'Chapati + Egg Bhurji'},
+    {day:'Sunday',   b:'Puri + Halwa',  l:'Special Biryani',    d:'Chapati + Mutton Gravy'},
+  ],
+  6: [
+    {day:'Monday',   b:'Dosa + Sambar',l:'Rice + Dal Tadka',    d:'Chapati + Chicken'},
+    {day:'Tuesday',  b:'Poha',          l:'Veg Pulao',           d:'Roti + Dal Makhni'},
+    {day:'Wednesday',b:'Idli',          l:'Rice + Kadhi',        d:'Chapati + Paneer Bhurji'},
+    {day:'Thursday', b:'Upma',          l:'Rice + Sambar',       d:'Roti + Aloo Gobi'},
+    {day:'Friday',   b:'Paratha',       l:'Lemon Rice + Raita',  d:'Chapati + Dal + Salad'},
+    {day:'Saturday', b:'Puri + Bhaji',  l:'Rice + Egg Curry',    d:'Chapati + Mix Veg'},
+    {day:'Sunday',   b:'Bread + Jam + Chai',l:'Biryani + Raita', d:'Roti + Paneer Masala'},
+  ],
+  7: [
+    {day:'Monday',   b:'Poha + Chai',   l:'Rice + Dal',          d:'Roti + Sabzi'},
+    {day:'Tuesday',  b:'Upma',          l:'Rice + Sambar',        d:'Chapati + Dal'},
+    {day:'Wednesday',b:'Idli',          l:'Pulao + Raita',        d:'Roti + Aloo'},
+    {day:'Thursday', b:'Paratha',       l:'Rice + Rajma',         d:'Chapati + Sabzi'},
+    {day:'Friday',   b:'Poha',          l:'Rice + Chole',         d:'Roti + Dal'},
+    {day:'Saturday', b:'Bread Omelette',l:'Rice + Egg Curry',     d:'Chapati + Paneer'},
+    {day:'Sunday',   b:'Puri + Halwa',  l:'Special Biryani',      d:'Roti + Mix Veg'},
+  ],
+  8: [
+    {day:'Monday',   b:'Idli + Sambar', l:'Rice + Dal + Papad',  d:'Chapati + Sabzi'},
+    {day:'Tuesday',  b:'Poha + Chai',   l:'Jeera Rice + Kadhi',   d:'Roti + Rajma'},
+    {day:'Wednesday',b:'Upma',          l:'Rice + Sambar',        d:'Chapati + Dal Fry'},
+    {day:'Thursday', b:'Paratha + Curd',l:'Rice + Chole',         d:'Roti + Egg Bhurji'},
+    {day:'Friday',   b:'Dosa',          l:'Pulao + Raita',        d:'Chapati + Aloo Matar'},
+    {day:'Saturday', b:'Bread + Eggs',  l:'Rice + Chicken Masala',d:'Roti + Dal Makhni'},
+    {day:'Sunday',   b:'Puri + Halwa',  l:'Biryani + Raita',      d:'Chapati + Paneer Butter Masala'},
+  ]
+};
+
+const listings = [
+  {id:0,name:'Govind Hostel',        type:'Hostel',gender:'Boys', price:2400,dist:550, beds:[2,3,4],phone:'9860919291',wa:'9860919291',map:'https://maps.app.goo.gl/EYLoqvbFFX7yB3TR7',available:false,note:'Best amenities. 2/3/4 sharing.',        images:['https://i.ibb.co/5gqJgHdS/7.jpg'],                                    amenities:['wifi','mess','laundry'],    tags:['Highly Rated'],reviews:[{name:'Rohan P.',rating:5,text:'Very clean, great staff!',date:'Dec 2024'},{name:'Sumit K.',rating:4,text:'Good amenities, a bit pricey but worth it.',date:'Jan 2025'}]},
+  {id:1,name:'Bhosale Building Boys',type:'Hostel',gender:'Boys', price:3000,dist:400, beds:[2,3],  phone:'8975361254',wa:'8975361254',map:'https://maps.app.goo.gl/fqFysEMiWpUW3GHn9',available:false,note:'Good hostel, slightly expensive.',       images:['https://i.ibb.co/v6kwW0PJ/5.jpg','https://i.ibb.co/j90p3m0F/6.jpg'],amenities:['wifi','parking','security'],tags:['Premium'],    reviews:[{name:'Akash V.',rating:4,text:'Nice location, close to college.',date:'Nov 2024'}]},
+  {id:2,name:'Military Boys Hostel',  type:'Hostel',gender:'Boys', price:3500,dist:1500,beds:[2,4],  phone:'02312661008',wa:'02312661008',map:'https://maps.app.goo.gl/xpr53LqvMfx3Qe9g9',available:false,note:'Military children only. Mess included.',images:['https://i.ibb.co/gK25Gwr/9.jpg','https://i.ibb.co/6CtvRcG/8.jpg'],amenities:['mess','security','cctv'],   tags:['Exclusive'],  reviews:[]},
+  {id:3,name:'Solo Boys Hostel',      type:'Hostel',gender:'Boys', price:2200,dist:500, beds:[2,3],  phone:'07304346470',wa:'7304346470',map:'https://maps.app.goo.gl/xpr53LqvMfx3Qe9g9',available:false,note:'Free WiFi available.',                 images:['https://i.ibb.co/JjF6crG2/3.jpg'],                                    amenities:['wifi','laundry'],           tags:['WiFi'],       reviews:[{name:'Vishal M.',rating:3,text:'Average, but WiFi is great.',date:'Jan 2025'}]},
+  {id:4,name:'Mina Niwas Boys',       type:'Hostel',gender:'Boys', price:2000,dist:600, beds:[4],    phone:'9209762580',wa:'9209762580',map:'https://maps.app.goo.gl/E6QNhGCeJJfHDGJv6',available:false,note:'Budget friendly. 4 sharing.',           images:['https://placehold.co/400x250/0a3d62/f39c12?text=Mina+Niwas'],         amenities:['water'],                    tags:['Budget'],     reviews:[]},
+  {id:5,name:'Govind Mess',           type:'Mess',  gender:'Co-ed',price:2800,dist:550, beds:[],     phone:'9860919291',wa:'9860919291',map:'https://maps.app.goo.gl/EYLoqvbFFX7yB3TR7',available:true, note:'Top quality and quantity.',            images:['https://i.ibb.co/zVt26Rs7/4.jpg'],                                    amenities:['wifi','mess'],              tags:['Best Taste'],reviews:[{name:'Priya S.',rating:5,text:'The food is absolutely delicious!',date:'Jan 2025'},{name:'Aditya R.',rating:5,text:'Best mess near college, no doubt.',date:'Feb 2025'}]},
+  {id:6,name:'Annapurna Mess',        type:'Mess',  gender:'Co-ed',price:2600,dist:580, beds:[],     phone:'8482865841',wa:'8482865841',map:'https://maps.app.goo.gl/6HkmrGXZ3tTmTTYB9',available:true, note:'Excellent reputation. Great food quality.',images:['https://i.ibb.co/ynnmfRkF/2.jpg'],                                 amenities:['mess','water'],             tags:['Quality Food'],reviews:[{name:'Neha K.',rating:5,text:'Homestyle food, very healthy.',date:'Dec 2024'}]},
+  {id:7,name:'Jadhav Mess',           type:'Mess',  gender:'Co-ed',price:2000,dist:150, beds:[],     phone:'8329614782',wa:'8329614782',map:'https://maps.app.goo.gl/q8QXbgrF8DajgdRH9',available:true, note:'Gharguti taste. Nearest to gate.',      images:['https://i.ibb.co/gM9pm3rQ/10.jpg'],                                   amenities:['mess','water','hot'],       tags:['Nearby'],    reviews:[{name:'Tanmay P.',rating:4,text:'Super close to college. Food tastes like home.',date:'Feb 2025'}]},
+  {id:8,name:'Yadav Mess',            type:'Mess',  gender:'Co-ed',price:2500,dist:220, beds:[],     phone:'7058939936',wa:'7058939936',map:'https://maps.app.goo.gl/UTMBrEXGbo4LH59S8',available:true, note:'Sufficient quantity. Gharguti style.',  images:['https://i.ibb.co/N6STF3k9/1.jpg'],                                    amenities:['mess','hot'],               tags:['Gharguti'],  reviews:[{name:'Sneha L.',rating:4,text:'Great value for money!',date:'Jan 2025'}]}
+];
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let wishlist=[], currentReviewId=-1, currentRating=0, lbImages=[], lbIndex=0;
+let currentView='grid', currentDetailId=-1;
+let quizAnswers={}, quizStep=1, totalQuizSteps=4;
+
+/* ══════════════════════════════════════
+   DARK MODE
+══════════════════════════════════════ */
+function toggleDark(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('darkBtn').innerHTML=isDark?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
+  showToast(isDark?'☀️ Light mode on':'🌙 Dark mode on','info');
+}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function showToast(msg, type='success', duration=2800){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className=`toast-item ${type}`;
+  const icon=type==='success'?'✅':type==='error'?'❌':'ℹ️';
+  t.innerHTML=`<span style="font-size:1.1rem;">${icon}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.animation='toastOut 0.4s ease forwards';setTimeout(()=>t.remove(),400);},duration);
+}
+
+/* ══════════════════════════════════════
+   SCROLL TO TOP
+══════════════════════════════════════ */
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('scrollTop');
+  btn.classList.toggle('show',window.scrollY>300);
+});
+
+/* ══════════════════════════════════════
+   PAGE NAVIGATION
+══════════════════════════════════════ */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  if(id==='wishlist') renderWishlist();
+  if(id==='compare') populateCompareDropdowns();
+  if(id==='admin') renderAdminStats();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══════════════════════════════════════
+   ANIMATED COUNTER
+══════════════════════════════════════ */
+function animateCounter(el, target, suffix='', duration=1200){
+  let start=0, step=target/60;
+  const timer=setInterval(()=>{
+    start=Math.min(start+step, target);
+    el.textContent=Math.round(start)+(suffix||'');
+    if(start>=target) clearInterval(timer);
+  },duration/60);
+}
+function initCounters(){
+  const hostels=listings.filter(l=>l.type==='Hostel').length;
+  const messes=listings.filter(l=>l.type==='Mess').length;
+  const closest=Math.min(...listings.map(l=>l.dist));
+  animateCounter(document.getElementById('stat-total'),listings.length);
+  animateCounter(document.getElementById('stat-hostels'),hostels);
+  animateCounter(document.getElementById('stat-messes'),messes);
+  animateCounter(document.getElementById('stat-closest'),closest,'m');
+}
+
+/* ══════════════════════════════════════
+   SMART BADGES
+══════════════════════════════════════ */
+function getSmartBadges(item){
+  const badges=[];
+  const allRatings=listings.map(l=>avgRating(l.reviews));
+  const maxRating=Math.max(...allRatings);
+  const minPrice=Math.min(...listings.map(l=>l.price));
+  const minDist=Math.min(...listings.map(l=>l.dist));
+  const reviewCounts=listings.map(l=>l.reviews.length);
+  const maxReviews=Math.max(...reviewCounts);
+
+  if(item.reviews.length===maxReviews && maxReviews>0) badges.push('<span class="smart-badge sb-popular">🔥 Most Popular</span>');
+  if(item.price===minPrice) badges.push('<span class="smart-badge sb-value">💰 Best Value</span>');
+  if(item.dist===minDist) badges.push('<span class="smart-badge sb-nearest">📍 Nearest</span>');
+  if(avgRating(item.reviews)===maxRating && item.reviews.length>0) badges.push('<span class="smart-badge sb-rated">⭐ Highest Rated</span>');
+  return badges.join('');
+}
+
+/* ══════════════════════════════════════
+   HELPERS
+══════════════════════════════════════ */
+function starsHTML(avg,count){
+  if(!count) return '<span style="font-size:0.72rem;color:var(--muted);">No reviews yet</span>';
+  let s='';for(let i=1;i<=5;i++) s+=`<span style="color:${i<=Math.round(avg)?'var(--gold)':'#d1d5db'}">★</span>`;
+  return `<span style="font-size:0.85rem;">${s}</span> <span style="font-size:0.72rem;color:var(--muted);font-weight:700;">${avg.toFixed(1)} (${count})</span>`;
+}
+function avgRating(reviews){
+  if(!reviews.length) return 0;
+  return reviews.reduce((a,r)=>a+r.rating,0)/reviews.length;
+}
+
+/* ══════════════════════════════════════
+   SKELETON LOADER
+══════════════════════════════════════ */
+function showSkeletons(){
+  const area=document.getElementById('cards-area');
+  area.innerHTML=Array(6).fill(0).map(()=>`
+    <div class="col-md-6 col-lg-4">
+      <div class="skeleton-card">
+        <div class="skel skel-img"></div>
+        <div style="padding:14px;">
+          <div class="skel skel-line w50"></div>
+          <div class="skel skel-line w90"></div>
+          <div class="skel skel-line w70"></div>
+          <div class="skel skel-line w50" style="margin-top:16px;"></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   CARD BUILDER
+══════════════════════════════════════ */
+function buildCard(item){
+  const avg=avgRating(item.reviews);
+  const gClass=item.gender==='Boys'?'gb-boys':item.gender==='Girls'?'gb-girls':'gb-coed';
+  const bedsHTML=item.beds.length?item.beds.map(b=>`<span class="bed-pill"><i class="fas fa-user-group" style="font-size:.55rem;"></i> ${b}-Sharing</span>`).join(''):'';
+  const amenHTML=item.amenities.map(a=>{const d=amenityDefs[a];return d?`<div class="amen-item"><i class="fas ${d.icon}"></i>${d.label}</div>`:''}).join('');
+  const saved=wishlist.includes(item.id);
+  const imgCount=item.images.length>1?`<div class="img-count"><i class="fas fa-images me-1"></i>${item.images.length}</div>`:'';
+  const smartBadges=getSmartBadges(item);
+  const thumbStrip=item.images.length>1?`<div class="thumb-strip">${item.images.map((src,i)=>`<img src="${src}" class="${i===0?'active':''}" onclick="switchCardImage(${item.id},${i},this)" title="Photo ${i+1}">`).join('')}</div>`:'';
+  const hasMenu=messMenus[item.id];
+  const menuBtn=hasMenu?`<button class="btn-menu" onclick="openMenu(${item.id})"><i class="fas fa-utensils me-1"></i>Menu</button>`:'';
+  return `
+  <div class="listing-card" id="card-${item.id}">
+    <div class="card-img-wrap">
+      <img src="${item.images[0]}" alt="${item.name}" loading="lazy" id="card-img-${item.id}" onclick="openLightbox(${item.id},0)">
+      <div class="price-pill">₹${item.price.toLocaleString()}<span style="font-size:.6rem;font-weight:600;opacity:.7">/mo</span></div>
+      <div class="avail-pill ${item.available?'avail-open':'avail-full'}">${item.available?'● Available':'● Full'}</div>
+      <button class="bookmark-btn ${saved?'saved':''}" onclick="toggleWishlist(${item.id})" title="Save"><i class="fas fa-bookmark"></i></button>
+      ${imgCount}
+    </div>
+    ${thumbStrip}
+    <div class="card-body-inner">
+      <div class="card-top-row">
+        <span class="type-badge">${item.type}</span>
+        <span class="gender-badge ${gClass}">${item.gender}</span>
+      </div>
+      ${smartBadges?`<div class="d-flex flex-wrap gap-1">${smartBadges}</div>`:''}
+      <div class="card-name" onclick="openDetail(${item.id})">${item.name}</div>
+      <div class="dist-row"><i class="fas fa-location-dot" style="color:var(--gold)"></i>${item.dist}m from DYPCET</div>
+      ${amenHTML?`<div class="amenity-icons">${amenHTML}</div>`:''}
+      ${bedsHTML?`<div class="bed-row">${bedsHTML}</div>`:''}
+      <div class="note-box">${item.note}</div>
+      <div class="star-row">${starsHTML(avg,item.reviews.length)}</div>
+      <div class="tag-row">${item.tags.map(t=>`<span class="tag-chip">${t}</span>`).join('')}</div>
+      <div class="card-actions">
+        <a href="https://wa.me/91${item.wa}" target="_blank" class="btn-wa"><i class="fab fa-whatsapp"></i>WhatsApp</a>
+        <a href="${item.map}" target="_blank" class="btn-map"><i class="fas fa-location-arrow"></i>Map</a>
+        <button class="btn-rv" onclick="openReviews(${item.id})"><i class="fas fa-star"></i></button>
+        <button class="btn-share" onclick="shareItem(${item.id})"><i class="fas fa-share-nodes"></i></button>
+        ${menuBtn}
+      </div>
+    </div>
+  </div>`;
+}
+
+function switchCardImage(itemId, imgIdx, el){
+  const item=listings.find(l=>l.id===itemId);
+  document.getElementById('card-img-'+itemId).src=item.images[imgIdx];
+  const strip=el.closest('.thumb-strip');
+  if(strip) strip.querySelectorAll('img').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ══════════════════════════════════════
+   FILTER & SORT
+══════════════════════════════════════ */
+function doFilter(){
+  const s=document.getElementById('f-search').value.toLowerCase();
+  const t=document.getElementById('f-type').value;
+  const d=document.getElementById('f-dist').value;
+  const b=document.getElementById('f-budget').value;
+  const g=document.getElementById('f-gender').value;
+  const beds=document.getElementById('f-beds').value;
+  const av=document.getElementById('f-avail').value;
+  const sort=document.getElementById('f-sort').value;
+
+  let filtered=listings.filter(i=>
+    i.name.toLowerCase().includes(s) &&
+    (t==='all'||i.type===t) &&
+    (d==='all'||i.dist<=parseInt(d)) &&
+    (b==='all'||i.price<=parseInt(b)) &&
+    (g==='all'||i.gender===g) &&
+    (beds==='all'||i.beds.includes(parseInt(beds))||i.type==='Mess') &&
+    (av==='all'||(av==='open'&&i.available)||(av==='full'&&!i.available))
+  );
+
+  // Sort
+  if(sort==='price-asc') filtered.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc') filtered.sort((a,b)=>b.price-a.price);
+  else if(sort==='dist-asc') filtered.sort((a,b)=>a.dist-b.dist);
+  else if(sort==='rating-desc') filtered.sort((a,b)=>avgRating(b.reviews)-avgRating(a.reviews));
+
+  document.getElementById('result-num').textContent=filtered.length;
+  if(currentView==='grid') renderCards(filtered);
+  renderMapPins(filtered);
+}
+
+function renderCards(data){
+  const area=document.getElementById('cards-area');
+  const noRes=document.getElementById('no-results');
+  if(!data.length){area.innerHTML='';noRes.style.display='block';return;}
+  noRes.style.display='none';
+  showSkeletons();
+  setTimeout(()=>{
+    area.innerHTML=data.map(item=>`<div class="col-md-6 col-lg-4">${buildCard(item)}</div>`).join('');
+  },700);
+}
+
+function clearFilters(){
+  ['f-search'].forEach(id=>{const el=document.getElementById(id);el.value='';});
+  ['f-type','f-dist','f-budget','f-gender','f-beds','f-avail','f-sort'].forEach(id=>{document.getElementById(id).selectedIndex=0;});
+  doFilter();
+  showToast('Filters cleared','info');
+}
+
+/* ══════════════════════════════════════
+   VIEW TOGGLE (Grid / Map)
+══════════════════════════════════════ */
+function setView(v){
+  currentView=v;
+  document.getElementById('grid-view-area').style.display=v==='grid'?'block':'none';
+  document.getElementById('map-view-area').style.display=v==='map'?'block':'none';
+  document.getElementById('btn-grid').classList.toggle('active',v==='grid');
+  document.getElementById('btn-map-toggle').classList.toggle('active',v==='map');
+  if(v==='map') doFilter();
+}
+
+function renderMapPins(data){
+  const el=document.getElementById('map-pins-list');
+  el.innerHTML=data.map((item,i)=>`
+    <div class="map-pin-item" onclick="window.open('${item.map}','_blank')">
+      <div class="map-pin-num">${i+1}</div>
+      <div>
+        <div class="map-pin-name">${item.name}</div>
+        <div class="map-pin-sub"><span style="color:var(--gold);font-weight:800;">₹${item.price.toLocaleString()}/mo</span> · ${item.dist}m · ${item.type}</div>
+      </div>
+      <i class="fas fa-external-link-alt ms-auto" style="color:var(--muted);font-size:0.75rem;"></i>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   WISHLIST
+══════════════════════════════════════ */
+function toggleWishlist(id){
+  const wasIn=wishlist.includes(id);
+  if(wasIn) wishlist=wishlist.filter(x=>x!==id);
+  else wishlist.push(id);
+  updateWishlistBadge();
+  const btn=document.querySelector(`#card-${id} .bookmark-btn`);
+  if(btn){btn.classList.toggle('saved',!wasIn);}
+  showToast(wasIn?'Removed from saved':'✅ Added to saved',wasIn?'info':'success');
+}
+function updateWishlistBadge(){
+  const badge=document.getElementById('wishlist-count');
+  if(wishlist.length>0){badge.style.display='inline';badge.textContent=wishlist.length;}
+  else badge.style.display='none';
+}
+function renderWishlist(){
+  const area=document.getElementById('wishlist-area');
+  const empty=document.getElementById('wishlist-empty');
+  const actions=document.getElementById('wishlist-actions');
+  if(!wishlist.length){area.innerHTML='';empty.style.display='block';actions.style.display='none!important';return;}
+  empty.style.display='none';
+  actions.style.display='flex';
+  area.innerHTML=wishlist.map(id=>{
+    const item=listings.find(l=>l.id===id);
+    return item?`<div class="col-md-6 col-lg-4">${buildCard(item)}</div>`:'';
+  }).join('');
+}
+function printWishlist(){
+  window.print();
+  showToast('Opening print dialog...','info');
+}
+
+/* ══════════════════════════════════════
+   LIGHTBOX
+══════════════════════════════════════ */
+function openLightbox(id,imgIdx){
+  const item=listings.find(l=>l.id===id);
+  lbImages=item.images; lbIndex=imgIdx;
+  showLbImage();
+  document.getElementById('lightbox').classList.add('open');
+}
+function showLbImage(){
+  document.getElementById('lb-img').src=lbImages[lbIndex];
+  document.getElementById('lb-caption').textContent=`Photo ${lbIndex+1} of ${lbImages.length}`;
+  document.getElementById('lb-prev').style.display=lbImages.length>1?'flex':'none';
+  document.getElementById('lb-next').style.display=lbImages.length>1?'flex':'none';
+}
+function lbNav(dir){lbIndex=(lbIndex+dir+lbImages.length)%lbImages.length;showLbImage();}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox();});
+
+/* ══════════════════════════════════════
+   DETAIL MODAL
+══════════════════════════════════════ */
+function openDetail(id){
+  currentDetailId=id;
+  const item=listings.find(l=>l.id===id);
+  document.getElementById('dm-name').textContent=item.name;
+  document.getElementById('dm-sub').textContent=`${item.type} · ${item.gender} · ${item.dist}m from DYPCET`;
+  document.getElementById('dm-price').textContent='₹'+item.price.toLocaleString();
+  document.getElementById('dm-dist').textContent=item.dist+'m';
+  document.getElementById('dm-avail-badge').innerHTML=item.available
+    ?'<span style="color:var(--green)">✔ Available</span>'
+    :'<span style="color:var(--red)">✘ Full</span>';
+  document.getElementById('dm-badge-row').innerHTML=getSmartBadges(item);
+  // Gallery
+  const gal=document.getElementById('dm-gallery');
+  gal.innerHTML=item.images.map((src,i)=>`<img src="${src}" alt="${item.name} photo ${i+1}" onclick="openLightbox(${id},${i})">`).join('');
+  if(item.images.length===1) gal.style.gridTemplateColumns='1fr';
+  else gal.style.gridTemplateColumns='1fr 1fr 1fr';
+  // Amenities
+  document.getElementById('dm-amenities').innerHTML=item.amenities.map(a=>{
+    const d=amenityDefs[a];return d?`<div class="dm-amen-item"><i class="fas ${d.icon}"></i>${d.label}</div>`:'';
+  }).join('');
+  // Beds
+  const bedsWrap=document.getElementById('dm-beds-wrap');
+  if(item.beds.length){
+    document.getElementById('dm-beds').innerHTML=item.beds.map(b=>`<span class="bed-pill">${b}-Sharing</span>`).join('');
+    bedsWrap.style.display='block';
+  } else bedsWrap.style.display='none';
+  // Note & Reviews
+  document.getElementById('dm-note').textContent=item.note;
+  document.getElementById('dm-review-count').textContent=item.reviews.length;
+  const reviewsEl=document.getElementById('dm-reviews-list');
+  if(!item.reviews.length) reviewsEl.innerHTML='<div style="color:var(--muted);font-size:0.85rem;text-align:center;padding:12px 0;">No reviews yet</div>';
+  else reviewsEl.innerHTML=item.reviews.slice(0,3).map(r=>`
+    <div class="review-card">
+      <div class="d-flex justify-content-between"><div class="review-name">${r.name}</div><div class="review-date">${r.date}</div></div>
+      <div style="font-size:0.9rem;margin:4px 0;">${'★'.repeat(r.rating)}<span style="color:#d1d5db">${'★'.repeat(5-r.rating)}</span></div>
+      <div class="review-text">${r.text}</div>
+    </div>`).join('');
+  // Map
+  document.getElementById('dm-map-iframe').src=`https://maps.google.com/maps?q=${encodeURIComponent(item.name+' Kolhapur')}&output=embed`;
+  document.getElementById('dm-map-link').href=item.map;
+  document.getElementById('dm-wa').href=`https://wa.me/91${item.wa}`;
+  document.getElementById('detailModal').classList.add('open');
+}
+function closeDetail(){document.getElementById('detailModal').classList.remove('open');}
+function openReviewsFromDetail(){closeDetail();openReviews(currentDetailId);}
+document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)closeDetail();});
+
+/* ══════════════════════════════════════
+   REVIEWS
+══════════════════════════════════════ */
+function openReviews(id){
+  currentReviewId=id; currentRating=0; refreshStars();
+  document.getElementById('rv-name').value='';
+  document.getElementById('rv-text').value='';
+  const item=listings.find(l=>l.id===id);
+  document.getElementById('rm-name').textContent=item.name;
+  const avg=avgRating(item.reviews);
+  document.getElementById('rm-avg').innerHTML=item.reviews.length?starsHTML(avg,item.reviews.length):'No reviews yet — be the first!';
+  renderReviewsList(item);
+  document.getElementById('reviewsModal').classList.add('open');
+}
+function renderReviewsList(item){
+  const el=document.getElementById('reviews-list');
+  if(!item.reviews.length){el.innerHTML='<div style="color:var(--muted);font-size:0.85rem;text-align:center;padding:20px;">No reviews yet. Add the first one!</div>';return;}
+  el.innerHTML=item.reviews.map(r=>`
+    <div class="review-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="review-name">${r.name}</div><div class="review-date">${r.date}</div>
+      </div>
+      <div style="font-size:0.9rem;margin:4px 0;">${'★'.repeat(r.rating)}<span style="color:#d1d5db">${'★'.repeat(5-r.rating)}</span></div>
+      <div class="review-text">${r.text}</div>
+    </div>`).join('');
+}
+function closeReviews(){document.getElementById('reviewsModal').classList.remove('open');}
+function setRating(v){currentRating=v;refreshStars();}
+function refreshStars(){document.querySelectorAll('.sstar').forEach(s=>s.classList.toggle('on',parseInt(s.dataset.v)<=currentRating));}
+function submitReview(){
+  const name=document.getElementById('rv-name').value.trim()||'Anonymous';
+  const text=document.getElementById('rv-text').value.trim();
+  if(!text){showToast('Please write a review before submitting','error');return;}
+  if(!currentRating){showToast('Please select a star rating','error');return;}
+  const item=listings.find(l=>l.id===currentReviewId);
+  const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dd=new Date();
+  item.reviews.unshift({name,rating:currentRating,text,date:`${m[dd.getMonth()]} ${dd.getFullYear()}`});
+  renderReviewsList(item);
+  const avg=avgRating(item.reviews);
+  document.getElementById('rm-avg').innerHTML=starsHTML(avg,item.reviews.length);
+  document.getElementById('rv-name').value='';
+  document.getElementById('rv-text').value='';
+  currentRating=0; refreshStars();
+  doFilter();
+  showToast('⭐ Review posted! Thank you!','success');
+}
+document.getElementById('reviewsModal').addEventListener('click',function(e){if(e.target===this)closeReviews();});
+
+/* ══════════════════════════════════════
+   MESS MENU
+══════════════════════════════════════ */
+function openMenu(id){
+  const item=listings.find(l=>l.id===id);
+  document.getElementById('menu-name').textContent=item.name;
+  const menu=messMenus[id]||[];
+  const tbody=document.getElementById('menu-table-body');
+  tbody.innerHTML=`
+    <thead><tr><th>Day</th><th>🌅 Breakfast</th><th>☀️ Lunch</th><th>🌙 Dinner</th></tr></thead>
+    <tbody>${menu.map(r=>`<tr><td>${r.day}</td><td>${r.b}</td><td>${r.l}</td><td>${r.d}</td></tr>`).join('')}</tbody>`;
+  document.getElementById('menuModal').classList.add('open');
+}
+function closeMenu(){document.getElementById('menuModal').classList.remove('open');}
+document.getElementById('menuModal').addEventListener('click',function(e){if(e.target===this)closeMenu();});
+
+/* ══════════════════════════════════════
+   SHARE
+══════════════════════════════════════ */
+function shareItem(id){
+  const item=listings.find(l=>l.id===id);
+  const text=`🏠 ${item.name}\n💰 ₹${item.price}/mo · 📍 ${item.dist}m from DYPCET\n${item.map}`;
+  if(navigator.share){
+    navigator.share({title:'DYPCET STAYZONE — '+item.name,text,url:item.map}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>showToast('📋 Details copied to clipboard!','success'));
+  }
+}
+
+/* ══════════════════════════════════════
+   COMPARE
+══════════════════════════════════════ */
+function populateCompareDropdowns(){
+  ['cmp-1','cmp-2','cmp-3'].forEach(id=>{
+    const sel=document.getElementById(id);
+    const cur=sel.value;
+    sel.innerHTML='<option value="">— Select —</option>'+listings.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
+    sel.value=cur;
+  });
+}
+function buildCompare(){
+  const ids=[document.getElementById('cmp-1').value,document.getElementById('cmp-2').value,document.getElementById('cmp-3').value]
+    .filter(v=>v!=='').map(Number);
+  const emptyEl=document.getElementById('compare-empty');
+  const resultEl=document.getElementById('compare-result');
+  if(ids.length<2){resultEl.innerHTML='';emptyEl.style.display='block';return;}
+  emptyEl.style.display='none';
+  const props=ids.map(id=>listings.find(l=>l.id===id));
+  const minPrice=Math.min(...props.map(p=>p.price));
+  const minDist=Math.min(...props.map(p=>p.dist));
+  const maxRating=Math.max(...props.map(p=>avgRating(p.reviews)));
+  const rows=[
+    {label:'Type',      fn:p=>`<span class="type-badge">${p.type}</span>`,win:null},
+    {label:'Gender',    fn:p=>`<span class="gender-badge ${p.gender==='Boys'?'gb-boys':p.gender==='Girls'?'gb-girls':'gb-coed'}">${p.gender}</span>`,win:null},
+    {label:'Price/mo',  fn:p=>`<strong>₹${p.price.toLocaleString()}</strong>`,winFn:p=>p.price===minPrice},
+    {label:'Distance',  fn:p=>`${p.dist}m`,winFn:p=>p.dist===minDist},
+    {label:'Available', fn:p=>`<span style="color:${p.available?'var(--green)':'var(--red)'};font-weight:800;">${p.available?'✔ Yes':'✘ Full'}</span>`,win:null},
+    {label:'Rating',    fn:p=>{const a=avgRating(p.reviews);return a?`<span style="color:var(--gold)">★</span> ${a.toFixed(1)}`:'<span style="opacity:.4">No reviews</span>';},winFn:p=>avgRating(p.reviews)===maxRating&&p.reviews.length>0},
+    {label:'Reviews',   fn:p=>`${p.reviews.length} review${p.reviews.length!==1?'s':''}`,winFn:p=>p.reviews.length===Math.max(...props.map(x=>x.reviews.length))&&p.reviews.length>0},
+    {label:'Amenities', fn:p=>p.amenities.map(a=>amenityDefs[a]?`<i class="fas ${amenityDefs[a].icon} me-1" title="${amenityDefs[a].label}" style="color:#2e86c1;"></i>`:''). join(''),win:null},
+    {label:'Beds',      fn:p=>p.beds.length?p.beds.map(b=>`<span class="bed-pill">${b}-Bed</span>`).join(''):'<span style="opacity:.4">N/A</span>',win:null},
+    {label:'Smart Badge',fn:p=>getSmartBadges(p)||'<span style="opacity:.4">—</span>',win:null},
+    {label:'WhatsApp',  fn:p=>`<a href="https://wa.me/91${p.wa}" target="_blank" class="btn-wa" style="padding:5px 12px;font-size:0.75rem;display:inline-flex;gap:5px;"><i class="fab fa-whatsapp"></i>Chat</a>`,win:null},
+    {label:'Map',       fn:p=>`<a href="${p.map}" target="_blank" class="btn-map" style="padding:5px 12px;font-size:0.75rem;display:inline-flex;gap:5px;"><i class="fas fa-location-arrow"></i>View</a>`,win:null},
+  ];
+  resultEl.innerHTML=`
+  <div class="mb-3 d-flex align-items-center gap-2">
+    <div style="width:6px;height:26px;background:var(--gold);border-radius:3px;"></div>
+    <h5 class="section-title mb-0">Side-by-Side Comparison</h5>
+  </div>
+  <div class="table-responsive">
+  <table class="table cmp-table mb-0">
+    <thead><tr>
+      <th class="cmp-row-label" style="background:#0a3d62;color:white;">Feature</th>
+      ${props.map(p=>`<th class="cmp-col-header">${p.name}</th>`).join('')}
+    </tr></thead>
+    <tbody>
+      ${rows.map(row=>`<tr>
+        <td class="cmp-row-label"><small>${row.label}</small></td>
+        ${props.map(p=>`<td class="${row.winFn&&row.winFn(p)?'cmp-win':''}">${row.fn(p)}</td>`).join('')}
+      </tr>`).join('')}
+    </tbody>
+  </table>
+  </div>
+  <div class="mt-2 mb-4" style="font-size:0.72rem;color:var(--muted);"><i class="fas fa-trophy me-1" style="color:var(--gold)"></i>Highlighted cells indicate the best value in that category.</div>`;
+}
+
+/* ══════════════════════════════════════
+   AI QUIZ
+══════════════════════════════════════ */
+function openQuiz(){
+  quizAnswers={}; quizStep=1; renderQuizStep();
+  document.getElementById('quizModal').classList.add('open');
+}
+function closeQuiz(){
+  document.getElementById('quizModal').classList.remove('open');
+  applyQuizFilters();
+}
+function restartQuiz(){quizAnswers={};quizStep=1;renderQuizStep();}
+function renderQuizStep(){
+  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+  const stepEl=document.getElementById(`qs-${quizStep}`)||document.getElementById('qs-results');
+  stepEl.classList.add('active');
+  document.getElementById('quiz-progress-bar').style.width=`${Math.min(quizStep/totalQuizSteps*100,100)}%`;
+  document.getElementById('quiz-nav').style.display=quizStep>totalQuizSteps?'none':'flex';
+  document.getElementById('quiz-back-btn').style.display=quizStep>1?'inline-flex':'none';
+  document.getElementById('quiz-title').textContent=quizStep>totalQuizSteps?'Your Results 🎯':'Find Your Perfect Match';
+  document.getElementById('quiz-subtitle').textContent=quizStep>totalQuizSteps?'Based on your preferences':'Answer '+totalQuizSteps+' quick questions';
+}
+function quizSelect(step, key, val){
+  quizAnswers[key]=val;
+  document.querySelectorAll(`#qs-${step} .quiz-opt`).forEach(o=>o.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  setTimeout(()=>{
+    if(step<totalQuizSteps){quizStep=step+1;renderQuizStep();}
+    else{quizStep=totalQuizSteps+1;renderQuizStep();computeQuizResults();}
+  },380);
+}
+function quizBack(){if(quizStep>1){quizStep--;renderQuizStep();}}
+function computeQuizResults(){
+  const budget=parseInt(quizAnswers.budget)||9999;
+  const dist=parseInt(quizAnswers.dist)||9999;
+  const type=quizAnswers.type||'all';
+  const priority=quizAnswers.priority||'';
+  let scored=listings.map(item=>{
+    let score=0;
+    if(item.price<=budget) score+=30;
+    if(item.dist<=dist) score+=25;
+    if(type==='all'||item.type===type) score+=20;
+    if(priority==='wifi'&&item.amenities.includes('wifi')) score+=15;
+    if(priority==='mess'&&item.amenities.includes('mess')) score+=15;
+    if(priority==='security'&&(item.amenities.includes('security')||item.amenities.includes('cctv'))) score+=15;
+    if(priority==='rating') score+=avgRating(item.reviews)*3;
+    if(item.available) score+=5;
+    return {...item, score};
+  }).filter(i=>i.score>0).sort((a,b)=>b.score-a.score).slice(0,3);
+  const labels=['🥇 Best Match','🥈 Great Option','🥉 Also Consider'];
+  document.getElementById('quiz-results-list').innerHTML=scored.map((item,i)=>`
+    <div class="quiz-result-card" onclick="closeQuiz();openDetail(${item.id})">
+      <div class="rank">${labels[i]||'Option'}</div>
+      <div style="font-weight:800;font-size:0.95rem;color:var(--text);font-family:'Syne',sans-serif;">${item.name}</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">₹${item.price.toLocaleString()}/mo · ${item.dist}m · ${item.type} · ${item.gender}</div>
+      <div style="margin-top:8px;">${starsHTML(avgRating(item.reviews),item.reviews.length)}</div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;font-weight:700;">Match score: ${item.score}/100</div>
+    </div>`).join('');
+}
+function applyQuizFilters(){
+  if(quizAnswers.type&&quizAnswers.type!=='all') document.getElementById('f-type').value=quizAnswers.type;
+  if(quizAnswers.budget) document.getElementById('f-budget').value=quizAnswers.budget;
+  if(quizAnswers.dist&&quizAnswers.dist!=='9999') document.getElementById('f-dist').value=quizAnswers.dist;
+  doFilter();
+  showPage('home');
+}
+document.getElementById('quizModal').addEventListener('click',function(e){if(e.target===this)closeQuiz();});
+
+/* ══════════════════════════════════════
+   ADMIN DASHBOARD
+══════════════════════════════════════ */
+function checkAdmin(){
+  const pwd=document.getElementById('adminPwd').value;
+  if(pwd==='admin123'){
+    document.getElementById('admin-locked').style.display='none';
+    document.getElementById('admin-content').style.display='block';
+    renderAdminDashboard();
+    showToast('✅ Welcome, Admin!','success');
+  } else {
+    showToast('❌ Wrong password. Hint: admin123','error');
+    document.getElementById('adminPwd').value='';
+  }
+}
+function renderAdminStats(){
+  if(document.getElementById('admin-content').style.display==='block') renderAdminDashboard();
+}
+function renderAdminDashboard(){
+  const totalReviews=listings.reduce((a,l)=>a+l.reviews.length,0);
+  const avail=listings.filter(l=>l.available).length;
+  const avgPrice=Math.round(listings.reduce((a,l)=>a+l.price,0)/listings.length);
+  document.getElementById('adm-total').textContent=listings.length;
+  document.getElementById('adm-reviews').textContent=totalReviews;
+  document.getElementById('adm-avail').textContent=avail;
+  document.getElementById('adm-avg-price').textContent='₹'+avgPrice.toLocaleString();
+  // Price chart
+  const maxP=Math.max(...listings.map(l=>l.price));
+  document.getElementById('price-chart').innerHTML=listings.map(l=>`
+    <div class="chart-bar-col">
+      <div class="chart-bar-val">₹${(l.price/1000).toFixed(1)}k</div>
+      <div class="chart-bar" style="height:${Math.round(l.price/maxP*100)}px;"></div>
+      <div class="chart-bar-lbl">${l.name.split(' ')[0]}</div>
+    </div>`).join('');
+  // Rating chart
+  const maxR=5;
+  document.getElementById('rating-chart').innerHTML=listings.map(l=>{
+    const avg=avgRating(l.reviews);
+    return `<div class="chart-bar-col">
+      <div class="chart-bar-val">${avg?avg.toFixed(1):'—'}</div>
+      <div class="chart-bar" style="height:${Math.round(avg/maxR*100)}px;background:linear-gradient(to top,var(--gold),#f8c471);"></div>
+      <div class="chart-bar-lbl">${l.name.split(' ')[0]}</div>
+    </div>`;}).join('');
+  // Table
+  document.getElementById('admin-table').innerHTML=`
+    <thead><tr><th>#</th><th>Name</th><th>Type</th><th>Price</th><th>Distance</th><th>Avail</th><th>Reviews</th><th>Rating</th></tr></thead>
+    <tbody>${listings.map((l,i)=>`<tr>
+      <td>${i+1}</td>
+      <td style="font-weight:700;">${l.name}</td>
+      <td><span class="type-badge">${l.type}</span></td>
+      <td style="font-weight:800;color:var(--gold);">₹${l.price.toLocaleString()}</td>
+      <td>${l.dist}m</td>
+      <td><span style="color:${l.available?'var(--green)':'var(--red)'};font-weight:800;">${l.available?'✔':'✘'}</span></td>
+      <td>${l.reviews.length}</td>
+      <td>${avgRating(l.reviews)?'⭐ '+avgRating(l.reviews).toFixed(1):'—'}</td>
+    </tr>`).join('')}</tbody>`;
+}
+
+/* ══════════════════════════════════════
+   OWNER FORM
+══════════════════════════════════════ */
+function previewImages(e){
+  const files=Array.from(e.target.files).slice(0,5);
+  const wrap=document.getElementById('img-previews');
+  wrap.innerHTML=`<div class="img-placeholder" onclick="document.getElementById('imgUpload').click()"><i class="fas fa-plus"></i></div>`;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=document.createElement('img');
+      img.src=ev.target.result;
+      img.style.cssText='width:88px;height:68px;object-fit:cover;border-radius:10px;border:2px solid var(--border);';
+      wrap.insertBefore(img,wrap.firstChild);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function submitOwner(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('[type=submit]');
+  btn.innerHTML='<i class="fas fa-circle-notch fa-spin me-2"></i>Submitting...';
+  btn.disabled=true;
+  setTimeout(()=>{
+    document.getElementById('ownerForm').innerHTML=`
+      <div class="text-center py-5">
+        <div style="font-size:4rem;margin-bottom:16px;">🎉</div>
+        <h4 class="section-title">Listing Submitted!</h4>
+        <p style="color:var(--muted);margin:12px 0 24px;font-size:0.9rem;">Thank you! Our team will verify your listing within 24–48 hours.<br>You'll receive a WhatsApp confirmation once it goes live.</p>
+        <button class="btn-gold px-4" onclick="showPage('home')"><i class="fas fa-home me-2"></i>Back to Listings</button>
+      </div>`;
+    showToast('🎉 Listing submitted successfully!','success',4000);
+  },1800);
+}
+
+/* ══════════════════════════════════════
+   KEYBOARD SHORTCUTS
+══════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('lightbox').classList.contains('open')){
+    if(e.key==='ArrowLeft') lbNav(-1);
+    if(e.key==='ArrowRight') lbNav(1);
+    if(e.key==='Escape') closeLightbox();
+  }
+  if(document.getElementById('reviewsModal').classList.contains('open')&&e.key==='Escape') closeReviews();
+  if(document.getElementById('detailModal').classList.contains('open')&&e.key==='Escape') closeDetail();
+  if(document.getElementById('quizModal').classList.contains('open')&&e.key==='Escape') closeQuiz();
+  if(document.getElementById('menuModal').classList.contains('open')&&e.key==='Escape') closeMenu();
+});
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+renderCards(listings);
+renderMapPins(listings);
+populateCompareDropdowns();
+setTimeout(initCounters, 400);
+</script>
+</body>
+</html>
